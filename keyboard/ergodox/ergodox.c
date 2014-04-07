@@ -22,7 +22,6 @@ Project located at <https://github.com/benblazak/ergodox-firmware>
 
 Most used files are located at
 <https://github.com/benblazak/ergodox-firmware/tree/partial-rewrite/firmware/keyboard/ergodox/controller>
-
 */
 
 #include <stdint.h>
@@ -42,7 +41,6 @@ bool i2c_initialized = 0;
 bool ergodox_left_led_1 = 0;  // left top
 bool ergodox_left_led_2 = 0;  // left middle
 bool ergodox_left_led_3 = 0;  // left bottom
-
 
 void init_ergodox(void)
 {
@@ -66,16 +64,22 @@ void init_ergodox(void)
     // blink leds
     ergodox_led_all_off();
     ergodox_led_all_set(LED_BRIGHTNESS_HI);
-    ergodox_led_all_on();
-    _delay_ms(333);
+    ergodox_right_led_1_on();
+    _delay_ms(250);
+    ergodox_right_led_2_on();
+    _delay_ms(250);
+    ergodox_right_led_3_on();
+    _delay_ms(250);
     ergodox_led_all_off();
 }
 
-uint8_t init_mcp23018(void) {
+uint8_t init_mcp23018(void)
+{
     uint8_t err = 0x20;
 
     // I2C subsystem
-    if (i2c_initialized == 0) {
+    if (i2c_initialized == 0)
+    {
         i2c_init();  // on pins D(1,0)
         i2c_initialized++;
         _delay_ms(1000);
@@ -90,6 +94,7 @@ uint8_t init_mcp23018(void) {
     err = i2c_write(0b00000000);        if (err) goto out;
     err = i2c_write(0b00111111);        if (err) goto out;
     i2c_stop();
+
     // set pull-up
     // - unused  : on  : 1
     // - input   : on  : 1
@@ -118,4 +123,3 @@ out:
     i2c_stop();
     return err;
 }
-

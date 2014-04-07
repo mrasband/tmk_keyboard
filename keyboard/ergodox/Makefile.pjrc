@@ -111,5 +111,3 @@ workman: all
 
 cub: OPT_DEFS += -DKEYMAP_CUB
 cub: all
-
-

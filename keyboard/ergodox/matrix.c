@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "i2cmaster.h"
 
 #ifndef DEBOUNCE
-#   define DEBOUNCE	5
+#   define DEBOUNCE	3
 #endif
 static uint8_t debouncing = DEBOUNCE;
 
@@ -40,22 +40,12 @@ static matrix_row_t matrix[MATRIX_ROWS];
 static matrix_row_t matrix_debouncing[MATRIX_ROWS];
 
 static matrix_row_t read_cols(uint8_t mcp23018_status, uint8_t row);
-static void init_cols(void);
-static void unselect_rows(uint8_t mcp23018_status);
-static void select_row(uint8_t mcp23018_status, uint8_t row);
+static void         init_cols(void);
+static void         unselect_rows(uint8_t mcp23018_status);
+static void         select_row(uint8_t mcp23018_status, uint8_t row);
 
-
-inline
-uint8_t matrix_rows(void)
-{
-    return MATRIX_ROWS;
-}
-
-inline
-uint8_t matrix_cols(void)
-{
-    return MATRIX_COLS;
-}
+inline uint8_t matrix_rows(void) { return MATRIX_ROWS; }
+inline uint8_t matrix_cols(void) { return MATRIX_COLS; }
 
 void matrix_init(void)
 {
@@ -67,7 +57,8 @@ void matrix_init(void)
     init_cols();
 
     // initialize matrix state: all keys off
-    for (uint8_t i=0; i < MATRIX_ROWS; i++) {
+    for (uint8_t i=0; i < MATRIX_ROWS; i++)
+    {
         matrix[i] = 0;
         matrix_debouncing[i] = 0;
     }
@@ -75,57 +66,47 @@ void matrix_init(void)
 
 uint8_t matrix_scan(void)
 {
-#ifdef KEYMAP_CUB
     uint8_t layer = biton32(layer_state);
-
-    if (layer == 1) {
-        ergodox_left_led_1_on();
-        ergodox_left_led_2_off();
-        ergodox_left_led_3_off();
-    } else if (layer == 2) {
-        ergodox_left_led_1_off();
-        ergodox_left_led_2_on();
-        ergodox_left_led_3_off();
-    } else if (layer == 3) {
-        ergodox_left_led_1_off();
-        ergodox_left_led_2_off();
-        ergodox_left_led_3_on();
-    } else if (layer == 4) {
-        ergodox_left_led_1_on();
-        ergodox_left_led_2_off();
-        ergodox_left_led_3_on();
-    } else if (layer == 5) {
-        ergodox_left_led_1_on();
-        ergodox_left_led_2_on();
-        ergodox_left_led_3_off();
-    } else if (layer == 6) {
-        ergodox_left_led_1_off();
-        ergodox_left_led_2_on();
-        ergodox_left_led_3_on();
-    } else if (layer == 7) {
-        ergodox_left_led_1_on();
-        ergodox_left_led_2_on();
-        ergodox_left_led_3_on();
-    } else {
-        ergodox_left_led_1_off();
-        ergodox_left_led_2_off();
-        ergodox_left_led_3_off();
+    switch (layer)
+    {
+        case 1:
+            ergodox_right_led_1_on();
+            ergodox_right_led_2_off();
+            ergodox_right_led_3_off();
+            break;
+        case 2:
+            ergodox_right_led_1_off();
+            ergodox_right_led_2_on();
+            ergodox_right_led_3_off();
+            break;
+        case 3:
+            ergodox_right_led_1_off();
+            ergodox_right_led_2_off();
+            ergodox_right_led_3_on();
+            break;
+        case 4:
+            ergodox_right_led_1_on();
+            ergodox_right_led_2_off();
+            ergodox_right_led_3_on();
+            break;
+        default:
+            ergodox_right_led_1_off();
+            ergodox_right_led_2_off();
+            ergodox_right_led_3_off();
     }
-
-    // not actually needed because we already calling init_mcp23018() in next line
-    // ergodox_left_leds_update();
-
-#endif
 
     uint8_t mcp23018_status = init_mcp23018();
 
-    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++)
+    {
         select_row(mcp23018_status, i);
         _delay_us(30);  // without this wait read unstable value.
         matrix_row_t cols = read_cols(mcp23018_status, i);
-        if (matrix_debouncing[i] != cols) {
+        if (matrix_debouncing[i] != cols)
+        {
             matrix_debouncing[i] = cols;
-            if (debouncing) {
+            if (debouncing)
+            {
                 debug("bounce!: "); debug_hex(debouncing); debug("\n");
             }
             debouncing = DEBOUNCE;
@@ -133,11 +114,16 @@ uint8_t matrix_scan(void)
         unselect_rows(mcp23018_status);
     }
 
-    if (debouncing) {
-        if (--debouncing) {
+    if (debouncing)
+    {
+        if (--debouncing)
+        {
             _delay_ms(1);
-        } else {
-            for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        }
+        else
+        {
+            for (uint8_t i = 0; i < MATRIX_ROWS; i++)
+            {
                 matrix[i] = matrix_debouncing[i];
             }
         }
@@ -167,7 +153,8 @@ matrix_row_t matrix_get_row(uint8_t row)
 void matrix_print(void)
 {
     print("\nr/c 0123456789ABCDEF\n");
-    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
+    for (uint8_t row = 0; row < MATRIX_ROWS; row++)
+    {
         phex(row); print(": ");
         pbin_reverse16(matrix_get_row(row));
         print("\n");
@@ -177,7 +164,8 @@ void matrix_print(void)
 uint8_t matrix_key_count(void)
 {
     uint8_t count = 0;
-    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++)
+    {
         count += bitpop16(matrix[i]);
     }
     return count;
@@ -206,10 +194,14 @@ static void  init_cols(void)
 
 static matrix_row_t read_cols(uint8_t mcp23018_status, uint8_t row)
 {
-    if (row < 7) {
-        if (mcp23018_status) { // if there was an error
+    if (row < 7)
+    {
+        if (mcp23018_status)
+        { // if there was an error
             return 0;
-        } else {
+        }
+        else
+        {
             uint8_t data = 0;
             uint8_t err = 0x20;
             err = i2c_start(I2C_ADDR_WRITE);    if (err) goto out;
@@ -221,7 +213,9 @@ static matrix_row_t read_cols(uint8_t mcp23018_status, uint8_t row)
             i2c_stop();
             return data;
         }
-    } else {
+    }
+    else
+    {
         // read from teensy
         return
             (PINF&(1<<0) ? 0 : (1<<0)) |
@@ -246,9 +240,12 @@ static matrix_row_t read_cols(uint8_t mcp23018_status, uint8_t row)
 static void unselect_rows(uint8_t mcp23018_status)
 {
     // unselect on mcp23018
-    if (mcp23018_status) { // if there was an error
+    if (mcp23018_status)
+    { // if there was an error
         // do nothing
-    } else {
+    }
+    else
+    {
         // set all rows hi-Z : 1
         uint8_t err = 0x20;
         err = i2c_start(I2C_ADDR_WRITE);    if (err) goto out;
@@ -272,11 +269,15 @@ static void unselect_rows(uint8_t mcp23018_status)
 
 static void select_row(uint8_t mcp23018_status, uint8_t row)
 {
-    if (row < 7) {
+    if (row < 7)
+    {
         // select on mcp23018
-        if (mcp23018_status) { // if there was an error
+        if (mcp23018_status)
+        { // if there was an error
             // do nothing
-        } else {
+        }
+        else
+        {
             // set active row low  : 0
             // set other rows hi-Z : 1
             uint8_t err = 0x20;
@@ -288,10 +289,13 @@ static void select_row(uint8_t mcp23018_status, uint8_t row)
         out:
             i2c_stop();
         }
-    } else {
+    }
+    else
+    {
         // select on teensy
         // Output low(DDR:1, PORT:0) to select
-        switch (row) {
+        switch (row)
+        {
             case 7:
                 DDRB  |= (1<<0);
                 PORTB &= ~(1<<0);
@@ -323,4 +327,3 @@ static void select_row(uint8_t mcp23018_status, uint8_t row)
         }
     }
 }
-
