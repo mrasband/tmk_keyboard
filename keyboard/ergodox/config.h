@@ -24,8 +24,8 @@ Project located at <https://github.com/benblazak/ergodox-firmware>
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// Specify the keymap (the keymap file must exist, maps should be declared in `keymap.c`)
-#define KEYMAP_DVORAK
+// Optionally specify the keymap (Maps are declared in `keymap.c` Defaults to qwerty)
+// #define KEYMAP_DVORAK
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID       0xFEED
