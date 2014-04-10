@@ -5,7 +5,7 @@ Keymap framework - how to define your keymap
 ## 0. Keymap and layers
 **Keymap** is comprised of multiple layers of key layout, you can define **32 layers** at most.
 **Layer** is an array of **keycodes** to define **actions** for each physical keys.
-respective layers can be validated simultaneously. Layers are indexed with 0 to 31 and higher layer has precedence.
+Respective layers can be validated simultaneously. Layers are indexed with 0 to 31 and higher layer has precedence.
 
     Keymap: 32 Layers                   Layer: Keycode matrix
     -----------------                   ---------------------
@@ -28,7 +28,7 @@ Keymap has its state in two parameters:
 **`default_layer`** indicates a base keymap layer(0-31) which is always valid and to be referred, **`keymap_stat`** is 16bit variable which has current on/off status of layers on its each bit.
 
 Keymap layer '0' is usually `default_layer` and which is the only valid layer and other layers is initially off after boot up firmware, though, you can configured them in `config.h`.
-To change `default_layer` will be useful when you switch key layout completely, say you want Colmak instead of Qwerty.
+To change `default_layer` will be useful when you switch key layout completely, say you want Colemak instead of Qwerty.
 
     Initial state of Keymap          Change base layout              
     -----------------------          ------------------              
@@ -65,7 +65,7 @@ On the other hand, you shall change `layer_state` to overlay base layer with som
 
 
 ### 0.2 Layer Precedence and Transparency
-Note that ***higher layer has higher priority on stack of layers***, namely firmware falls down from top layer to bottom to look up keycode. Once it spots keycode other than **`KC_TRNS`**(transparent) on a layer it stops searching and lower layers aren't referred.
+Note that ***higher layer has higher priority on stack of layers***, namely firmware falls down from top layer to bottom to look up a keycode. Once it spots a keycode other than **`KC_TRNS`** (transparent) on a layer it stops searching and lower layers aren't referred.
 
 You can place `KC_TRNS` on overlay layer changes just part of layout to fall back on lower or base layer.
 Key with `KC_TRANS` doen't has its own keycode and refers to lower valid layers for keycode, instead.
