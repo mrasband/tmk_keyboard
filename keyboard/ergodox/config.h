@@ -25,13 +25,13 @@ Project located at <https://github.com/benblazak/ergodox-firmware>
 #define CONFIG_H
 
 // Optionally specify the keymap (Maps are declared in `keymap.c` Defaults to qwerty)
-// #define KEYMAP_DVORAK
+#define KEYMAP_DVORAK
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID       0xFEED
 #define PRODUCT_ID      0x1111
 #define DEVICE_VER      0x0001
-#define MANUFACTURER    TMK/Cub
+#define MANUFACTURER    TMK/Cub/Nerdwaller
 #define PRODUCT         ErgoDox
 #define DESCRIPTION     t.m.k. keyboard firmware for Ergodox
 
