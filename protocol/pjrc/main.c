@@ -24,12 +24,14 @@
 #include <stdbool.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 #include "keyboard.h"
 #include "usb.h"
 #include "matrix.h"
 #include "print.h"
 #include "debug.h"
+#include "sendchar.h"
 #include "util.h"
 #include "suspend.h"
 #include "host.h"
@@ -49,6 +51,8 @@ int main(void)
     // this will wait forever.
     usb_init();
     while (!usb_configured()) /* wait */ ;
+
+    print_set_sendchar(sendchar);
 
     keyboard_init();
     host_set_driver(pjrc_driver());

@@ -8,25 +8,37 @@
 **************************************************************************/
 #include <inttypes.h>
 #include <compat/twi.h>
+
 #include <i2cmaster.h>
+
 
 /* define CPU frequency in Mhz here if not defined in Makefile */
 #ifndef F_CPU
-#define F_CPU 4000000UL
+#define F_CPU 16000000UL
 #endif
 
 /* I2C clock in Hz */
-#define SCL_CLOCK  100000L
+#define SCL_CLOCK  400000L
+
 
 /*************************************************************************
  Initialization of the I2C bus interface. Need to be called only once
 *************************************************************************/
 void i2c_init(void)
 {
-    /* initialize TWI clock: 100 kHz clock, TWPS = 0 => prescaler = 1 */
-    TWSR = 0;                         /* no prescaler */
-    TWBR = ((F_CPU/SCL_CLOCK)-16)/2;  /* must be > 10 for stable operation */
-}
+  /* initialize TWI clock
+   * minimal values in Bit Rate Register (TWBR) and minimal Prescaler
+   * bits in the TWI Status Register should give us maximal possible
+   * I2C bus speed - about 444 kHz
+   *
+   * for more details, see 20.5.2 in ATmega16/32 secification
+   */
+  
+  TWSR = 0;     /* no prescaler */
+  TWBR = 10;    /* must be >= 10 for stable operation */
+
+}/* i2c_init */
+
 
 /*************************************************************************	
   Issues a start condition and sends address and transfer direction.
@@ -59,7 +71,8 @@ unsigned char i2c_start(unsigned char address)
 
 	return 0;
 
-}
+}/* i2c_start */
+
 
 /*************************************************************************
  Issues a start condition and sends address and transfer direction.
@@ -72,7 +85,7 @@ void i2c_start_wait(unsigned char address)
     uint8_t   twst;
 
 
-    while (1)
+    while ( 1 )
     {
 	    // send START condition
 	    TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
@@ -106,7 +119,9 @@ void i2c_start_wait(unsigned char address)
     	//if( twst != TW_MT_SLA_ACK) return 1;
     	break;
      }
-}
+
+}/* i2c_start_wait */
+
 
 /*************************************************************************
  Issues a repeated start condition and sends address and transfer direction 
@@ -120,7 +135,8 @@ unsigned char i2c_rep_start(unsigned char address)
 {
     return i2c_start( address );
 
-}
+}/* i2c_rep_start */
+
 
 /*************************************************************************
  Terminates the data transfer and releases the I2C bus
@@ -133,7 +149,8 @@ void i2c_stop(void)
 	// wait until stop condition is executed and bus released
 	while(TWCR & (1<<TWSTO));
 
-}
+}/* i2c_stop */
+
 
 /*************************************************************************
   Send one byte to I2C device
@@ -158,7 +175,8 @@ unsigned char i2c_write( unsigned char data )
 	if( twst != TW_MT_DATA_ACK) return 1;
 	return 0;
 
-}
+}/* i2c_write */
+
 
 /*************************************************************************
  Read one byte from the I2C device, request more data from device 
@@ -172,7 +190,8 @@ unsigned char i2c_readAck(void)
 
     return TWDR;
 
-}
+}/* i2c_readAck */
+
 
 /*************************************************************************
  Read one byte from the I2C device, read is followed by a stop condition 
@@ -186,4 +205,4 @@ unsigned char i2c_readNak(void)
 	
     return TWDR;
 
-}
+}/* i2c_readNak */

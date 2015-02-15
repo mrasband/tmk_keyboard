@@ -26,43 +26,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void led_set(uint8_t usb_led)
 {
     // topmost - NumLock
-#ifdef INVERT_NUMLOCK
-    if (usb_led & (1<<USB_LED_NUM_LOCK)) 
-    {
+#ifndef INVERT_NUMLOCK
+    if (usb_led & (1<<USB_LED_NUM_LOCK)) {
         ergodox_right_led_1_on();
-    } 
-    else 
-    {
+    } else {
         ergodox_right_led_1_off();
     }
 #else
-    if (usb_led & (1<<USB_LED_NUM_LOCK)) 
-    {
+    if (usb_led & (1<<USB_LED_NUM_LOCK)) {
         ergodox_right_led_1_off();
-    } 
-    else 
-    {
+    } else {
         ergodox_right_led_1_on();
     }
 #endif
 
     // middle - CapsLock
-    if (usb_led & (1<<USB_LED_CAPS_LOCK)) 
-    {
+    if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
         ergodox_right_led_2_on();
-    } 
-    else
-    {
-
+    } else {
         ergodox_right_led_2_off();
     }
+
     // bottommost - ScrollLock
-    if (usb_led & (1<<USB_LED_SCROLL_LOCK)) 
-    {
+    if (usb_led & (1<<USB_LED_SCROLL_LOCK)) {
         ergodox_right_led_3_on();
-    } 
-    else 
-    {
+    } else {
         ergodox_right_led_3_off();
     }
 }
+

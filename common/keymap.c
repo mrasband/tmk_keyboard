@@ -14,7 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <avr/pgmspace.h>
 #include "keymap.h"
 #include "report.h"
 #include "keycode.h"
@@ -23,90 +22,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "action_macro.h"
 #include "debug.h"
 
+
 static action_t keycode_to_action(uint8_t keycode);
 
+
 /* converts key to action */
-action_t action_for_key(uint8_t layer, key_t key)
+action_t action_for_key(uint8_t layer, keypos_t key)
 {
     uint8_t keycode = keymap_key_to_keycode(layer, key);
-    switch (keycode)
-    {
+    switch (keycode) {
         case KC_FN0 ... KC_FN31:
             return keymap_fn_to_action(keycode);
 #ifdef BOOTMAGIC_ENABLE
         case KC_CAPSLOCK:
-            if (keymap_config.swap_control_capslock || keymap_config.capslock_to_control)
-            {
+        case KC_LOCKING_CAPS:
+            if (keymap_config.swap_control_capslock || keymap_config.capslock_to_control) {
                 return keycode_to_action(KC_LCTL);
             }
-            return keycode_to_action(KC_CAPS);
+            return keycode_to_action(keycode);
         case KC_LCTL:
-            if (keymap_config.swap_control_capslock)
-            {
+            if (keymap_config.swap_control_capslock) {
                 return keycode_to_action(KC_CAPSLOCK);
             }
             return keycode_to_action(KC_LCTL);
         case KC_LALT:
-            if (keymap_config.swap_lalt_lgui)
-            {
-                if (keymap_config.no_gui)
-                {
+            if (keymap_config.swap_lalt_lgui) {
+                if (keymap_config.no_gui) {
                     return keycode_to_action(ACTION_NO);
                 }
                 return keycode_to_action(KC_LGUI);
             }
             return keycode_to_action(KC_LALT);
         case KC_LGUI:
-            if (keymap_config.swap_lalt_lgui)
-            {
+            if (keymap_config.swap_lalt_lgui) {
                 return keycode_to_action(KC_LALT);
             }
-            if (keymap_config.no_gui)
-            {
+            if (keymap_config.no_gui) {
                 return keycode_to_action(ACTION_NO);
             }
             return keycode_to_action(KC_LGUI);
         case KC_RALT:
-            if (keymap_config.swap_ralt_rgui)
-            {
-                if (keymap_config.no_gui)
-                {
+            if (keymap_config.swap_ralt_rgui) {
+                if (keymap_config.no_gui) {
                     return keycode_to_action(ACTION_NO);
                 }
                 return keycode_to_action(KC_RGUI);
             }
             return keycode_to_action(KC_RALT);
         case KC_RGUI:
-            if (keymap_config.swap_ralt_rgui)
-            {
+            if (keymap_config.swap_ralt_rgui) {
                 return keycode_to_action(KC_RALT);
             }
-            if (keymap_config.no_gui)
-            {
+            if (keymap_config.no_gui) {
                 return keycode_to_action(ACTION_NO);
             }
             return keycode_to_action(KC_RGUI);
         case KC_GRAVE:
-            if (keymap_config.swap_grave_esc)
-            {
+            if (keymap_config.swap_grave_esc) {
                 return keycode_to_action(KC_ESC);
             }
             return keycode_to_action(KC_GRAVE);
         case KC_ESC:
-            if (keymap_config.swap_grave_esc)
-            {
+            if (keymap_config.swap_grave_esc) {
                 return keycode_to_action(KC_GRAVE);
             }
             return keycode_to_action(KC_ESC);
         case KC_BSLASH:
-            if (keymap_config.swap_backslash_backspace)
-            {
+            if (keymap_config.swap_backslash_backspace) {
                 return keycode_to_action(KC_BSPACE);
             }
             return keycode_to_action(KC_BSLASH);
         case KC_BSPACE:
-            if (keymap_config.swap_backslash_backspace)
-            {
+            if (keymap_config.swap_backslash_backspace) {
                 return keycode_to_action(KC_BSLASH);
             }
             return keycode_to_action(KC_BSPACE);
@@ -130,12 +117,13 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
 }
 
+
+
 /* translates keycode to action */
 static action_t keycode_to_action(uint8_t keycode)
 {
     action_t action;
-    switch (keycode)
-    {
+    switch (keycode) {
         case KC_A ... KC_EXSEL:
         case KC_LCTRL ... KC_RGUI:
             action.code = ACTION_KEY(keycode);
@@ -160,13 +148,14 @@ static action_t keycode_to_action(uint8_t keycode)
 }
 
 
+
 #ifdef USE_LEGACY_KEYMAP
 /*
  * Legacy keymap support
  *      Consider using new keymap API instead.
  */
 __attribute__ ((weak))
-uint8_t keymap_key_to_keycode(uint8_t layer, key_t key)
+uint8_t keymap_key_to_keycode(uint8_t layer, keypos_t key)
 {
     return keymap_get_keycode(layer, key.row, key.col);
 }
@@ -177,18 +166,14 @@ __attribute__ ((weak))
 action_t keymap_fn_to_action(uint8_t keycode)
 {
     action_t action = { .code = ACTION_NO };
-    switch (keycode)
-    {
+    switch (keycode) {
         case KC_FN0 ... KC_FN31:
             {
                 uint8_t layer = keymap_fn_layer(FN_INDEX(keycode));
                 uint8_t key = keymap_fn_keycode(FN_INDEX(keycode));
-                if (key)
-                {
+                if (key) {
                     action.code = ACTION_LAYER_TAP_KEY(layer, key);
-                }
-                else
-                {
+                } else {
                     action.code = ACTION_LAYER_MOMENTARY(layer);
                 }
             }

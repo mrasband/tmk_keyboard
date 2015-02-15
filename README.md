@@ -33,13 +33,15 @@ You can find some keyboard specific projects under `converter` and `keyboard` di
 ### converter
 * [ps2_usb](converter/ps2_usb/)             - [PS/2 keyboard to USB][GH_ps2]
 * [adb_usb](converter/adb_usb/)             - [ADB keyboard to USB][GH_adb]
-* [m0110_usb](converter/m0110_usb)          - [Machintosh 128K/512K/Plus keyboard to USB][GH_m0110]
+* [m0110_usb](converter/m0110_usb)          - [Macintosh 128K/512K/Plus keyboard to USB][GH_m0110]
 * [terminal_usb](converter/terminal_usb/)   - [IBM Model M terminal keyboard(PS/2 scancode set3) to USB][GH_terminal]
 * [news_usb](converter/news_usb/)           - [Sony NEWS keyboard to USB][GH_news]
 * [x68k_usb](converter/x68k_usb/)           - [Sharp X68000 keyboard to USB][GH_x68k]
 * [sun_usb](converter/sun_usb/)             - [Sun] to USB(type4, 5 and 3?)
 * [pc98_usb](converter/pc98_usb/)           - [PC98] to USB
 * [usb_usb](converter/usb_usb/)             - USB to USB(experimental)
+* [ascii_usb](converter/ascii_usb/)         - ASCII(Serial console terminal) to USB
+* [ibm4704_usb](converter/ibm4704_usb)      - [IBM 4704 keyboard Converter][GH_ibm4704]
 
 ### keyboard
 * [hhkb](keyboard/hhkb/)                    - [Happy Hacking Keyboard pro][GH_hhkb] **my main board**
@@ -50,6 +52,16 @@ You can find some keyboard specific projects under `converter` and `keyboard` di
 * [IIgs_Standard](keyboard/IIgs/)           - Apple [IIGS] keyboard mod(by JeffreySung)
 * [macway](keyboard/macway/)                - [Compact keyboard mod][GH_macway] [retired]
 * [KMAC](keyboard/kmac/)                    - Korean custom keyboard
+* [Lightsaber](keyboard/lightsaber/)        - Korean custom keyboard
+* [Infinity](keyboard/infinity/)            - Massdrop [Infinity keyboard][Infinity]
+* [NerD](keyboard/nerd/)                    - Korean custom keyboard
+* [KittenPaw](keyboard/kitten_paw)          - Custom Majestouch controller
+* [Lightpad](keyboard/lightpad)             - Korean custom keypad
+* [ghost_squid](keyboard/ghost_squid/)      - [The Ghost Squid][ghost_squid] controller for [Cooler Master QuickFire XT][cmxt]
+* [ErgoDox](keyboard/ergodox/)              - [Ergonomic keyboard][ergodox_org] [with split design][GH_ergodox] (see [Ergodox-FAQ.md](keyboard/ergodox/Ergodox-FAQ.md))
+
+### Extenal projects using tmk_keyboard
+* [mcdox][mcdox_tmk]                        - [mcdox][mcdox]
 
 [GH_macway]:    http://geekhack.org/showwiki.php?title=Island:11930
 [GH_hhkb]:      http://geekhack.org/showwiki.php?title=Island:12047
@@ -61,6 +73,8 @@ You can find some keyboard specific projects under `converter` and `keyboard` di
 [GH_terminal]:  http://geekhack.org/showwiki.php?title=Island:27272
 [GH_x68k]:      http://geekhack.org/showwiki.php?title=Island:29060
 [GH_hbkb]:      http://geekhack.org/showwiki.php?title=Island:29483
+[GH_ibm4704]:   http://geekhack.org/index.php?topic=54706.0
+[GH_ergodox]:   http://geekhack.org/index.php?topic=48106.0
 [HID_liber]:    http://deskthority.net/wiki/HID_Liberation_Device_-_DIY_Instructions
 [Phantom]:      http://geekhack.org/index.php?topic=26742
 [GH60]:         http://geekhack.org/index.php?topic=34959
@@ -68,6 +82,13 @@ You can find some keyboard specific projects under `converter` and `keyboard` di
 [PC98]:         http://en.wikipedia.org/wiki/NEC_PC-9801
 [Sun]:          http://en.wikipedia.org/wiki/Sun-3
 [IIGS]:         http://en.wikipedia.org/wiki/Apple_IIGS
+[Infinity]:     https://www.massdrop.com/buy/infinity-keyboard-kit
+[ghost_squid]:  http://deskthority.net/wiki/Costar_replacement_controllers#The_Ghost_Squid
+[cmxt]:         http://gaming.coolermaster.com/en/products/keyboards/quickfirext/
+[ergodox_org]:  http://ergodox.org/
+[cub-uanic]:    https://github.com/cub-uanic/tmk_keyboard/tree/master/keyboard/ergodox
+[mcdox]:        https://github.com/DavidMcEwan/mcdox
+[mcdox_tmk]:    https://github.com/DavidMcEwan/tmk_keyboard/tree/master/keyboard/mcdox
 
 
 
@@ -90,7 +111,7 @@ See [doc/keymap.md](doc/keymap.md).
 
 
 
-Magic Comannds
+Magic Commands
 --------------
 To see help press `Magic` + `H`.
 
@@ -121,7 +142,7 @@ Following commands can be also executed with `Magic` + key. In console mode `Mag
 **TBD**
 
 ### Boot Magic Configuration - Virtual DIP Switch
-Boot Magic are executed during boot up time. Press Magic key below then pulgin keyboard cable.
+Boot Magic are executed during boot up time. Press Magic key below then plug in keyboard cable.
 Note that you must use keys of **Layer 0** as Magic keys. These settings are stored in EEPROM so that retain your configure over power cycles.
 
 To avoid configuring accidentally additive salt key `KC_SPACE` also needs to be pressed along with the following configuration keys. The salt key is configurable in `config.h`. See [common/bootmagic.h](common/bootmagic.h).
@@ -141,12 +162,13 @@ To avoid configuring accidentally additive salt key `KC_SPACE` also needs to be 
 
 #### Keymap
 - Swap Control and CapsLock(`Left Control`)
-- Change CapsLock to Control(`Casp Lock`)
+- Change CapsLock to Control(`Caps Lock`)
 - Swap LeftAlt and Gui(`Left Alt`)
 - Swap RightAlt and Gui(`Right Alt`)
 - Disable Gui(`Left Gui`)
 - Swap Grave and Escape(`Grave`)
 - Swap BackSlash and BackSpace(`Back Slash`)
+- Enable NKRO on boot(`N`)
 
 #### Default Layer
 - Set Default Layer to 0(`0`)
@@ -210,7 +232,7 @@ Architecture
 
 
 
-Debuging
+Debugging
 --------
 Use PJRC's `hid_listen` to see debug messages. You can use the tool for debug even if firmware use LUFA stack.
 
@@ -227,7 +249,7 @@ Files and Directories
 * converter/    - protocol converter projects
 * doc/          - documents
 * common.mk     - Makefile for common
-* protoco.mk    - Makefile for protocol
+* protocol.mk    - Makefile for protocol
 * rules.mk      - Makefile for build rules
 
 ### Common
@@ -263,7 +285,7 @@ Files and Directories
 
 
 
-Conding Style
+Coding Style
 -------------
 - Doesn't use Tab to indent, use 4-spaces instead.
 
@@ -271,4 +293,4 @@ Conding Style
 
 Other Keyboard Firmware Projects
 ------------------
-See [doc/other_projects.md](doc/other_projects.md).
+You can learn a lot about keyboard firmware from these. See [doc/other_projects.md](doc/other_projects.md).
